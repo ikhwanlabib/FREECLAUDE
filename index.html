@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude AI Chatbox - Free Unlimited</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://js.puter.com/v2/"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" id="newChatBtn">
+                    <i class="fas fa-plus"></i>
+                    <span>New Chat</span>
+                </button>
+            </div>
+
+            <div class="chats-list" id="chatsList"></div>
+
+            <div class="sidebar-footer">
+                <button class="settings-btn" id="settingsBtn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="help-btn" id="helpBtn" title="Help">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-container">
+            <!-- Top Bar -->
+            <div class="chat-header">
+                <div class="header-left">
+                    <button class="menu-btn mobile-only" id="menuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="chat-title" id="chatTitle">Claude AI Assistant</h1>
+                </div>
+                <div class="header-right">
+                    <select id="modelSelect" class="model-select">
+                        <option value="claude-opus-4-7">🧠 Claude Opus 4.7</option>
+                        <option value="claude-sonnet-4-6" selected>⚡ Claude Sonnet 4.6</option>
+                        <option value="claude-haiku-4-5">🏃 Claude Haiku 4.5</option>
+                        <option value="claude-opus-4.6-fast">⚡⚡ Opus 4.6 Fast</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="messages-container" id="messagesContainer">
+                <div class="welcome-section">
+                    <div class="welcome-icon">
+                        <i class="fas fa-sparkles"></i>
+                    </div>
+                    <h2>Claude AI Assistant</h2>
+                    <p>Ask me anything. I can:</p>
+                    <ul class="capabilities-list">
+                        <li>📝 Answer questions & provide explanations</li>
+                        <li>💻 Write and debug code</li>
+                        <li>📄 Analyze documents & files</li>
+                        <li>✍️ Help with writing & editing</li>
+                        <li>🧮 Solve math & logic problems</li>
+                        <li>🎓 Explain complex concepts</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-section">
+                <div class="input-toolbar">
+                    <button class="attach-btn" id="attachBtn" title="Upload file">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <input type="file" id="fileInput" style="display: none;" accept=".txt,.pdf,.md,.json,.py,.js,.java,.cpp,.html,.css,.csv,image/*">
+                    
+                    <div class="attached-files" id="attachedFiles"></div>
+                </div>
+
+                <div class="input-wrapper">
+                    <textarea 
+                        id="messageInput" 
+                        class="message-input"
+                        placeholder="Ask me anything... (Shift+Enter for new line, Enter to send)"
+                        rows="1">
+                    </textarea>
+                    <button class="send-btn" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Settings Modal -->
+        <div class="modal" id="settingsModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button class="close-btn" onclick="closeModal('settingsModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-group">
+                        <label>System Prompt</label>
+                        <textarea id="systemPrompt" class="setting-textarea" placeholder="Customize Claude's behavior..." rows="4"></textarea>
+                    </div>
+                    <div class="setting-group">
+                        <label>
+                            <input type="checkbox" id="streamingToggle" checked>
+                            Enable Streaming Responses
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <label>
+                            <input type="checkbox" id="codeHighlightToggle" checked>
+                            Syntax Highlighting for Code
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeModal('settingsModal')">Close</button>
+                    <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Modal -->
+        <div class="modal" id="helpModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Help & Shortcuts</h2>
+                    <button class="close-btn" onclick="closeModal('helpModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <h3>Keyboard Shortcuts</h3>
+                    <ul class="shortcuts-list">
+                        <li><kbd>Enter</kbd> - Send message</li>
+                        <li><kbd>Shift + Enter</kbd> - New line in message</li>
+                        <li><kbd>Ctrl + L</kbd> - Clear chat</li>
+                        <li><kbd>Ctrl + K</kbd> - New chat</li>
+                    </ul>
+                    <h3>File Upload</h3>
+                    <p>Supported formats: .txt, .pdf, .md, .json, .py, .js, and images</p>
+                    <h3>Features</h3>
+                    <ul class="features-list">
+                        <li>💬 Full conversation history</li>
+                        <li>📁 Upload & analyze documents</li>
+                        <li>🎨 Code syntax highlighting</li>
+                        <li>💾 Auto-save conversations</li>
+                        <li>🌙 Dark mode (GitHub style)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
